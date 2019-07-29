@@ -37,6 +37,8 @@ const String paramPath = "path";
 const String paramVersion = "version";
 // The database id (int)
 const String paramId = "id";
+// When opening the database (String) (optional)
+const String paramPassword = "password";
 // When opening the database (bool)
 const String paramReadOnly = "readOnly";
 // When opening the database (bool)

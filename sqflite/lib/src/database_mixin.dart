@@ -494,6 +494,10 @@ mixin SqfliteDatabaseMixin implements SqfliteDatabase {
     // Single instance?
     params[paramSingleInstance] = options?.singleInstance != false;
 
+    if (options?.password != null){
+      params[paramPassword] = options?.password;
+    }
+
     // Version up to 1.1.5 returns an int
     // Now it returns some database information
     // the one being about being recovered from the native world

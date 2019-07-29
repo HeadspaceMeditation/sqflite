@@ -5,7 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteCantOpenDatabaseException;
-import android.database.sqlite.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteDatabaseHook;
+
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Process;
@@ -50,6 +52,7 @@ import static com.tekartik.sqflite.Constant.PARAM_CMD;
 import static com.tekartik.sqflite.Constant.PARAM_ID;
 import static com.tekartik.sqflite.Constant.PARAM_LOG_LEVEL;
 import static com.tekartik.sqflite.Constant.PARAM_OPERATIONS;
+import static com.tekartik.sqflite.Constant.PARAM_PASSWORD;
 import static com.tekartik.sqflite.Constant.PARAM_PATH;
 import static com.tekartik.sqflite.Constant.PARAM_READ_ONLY;
 import static com.tekartik.sqflite.Constant.PARAM_RECOVERED;
@@ -89,6 +92,7 @@ public class SqflitePlugin implements MethodCallHandler {
     // Plugin registration.
     //
     public static void registerWith(Registrar registrar) {
+        SQLiteDatabase.loadLibs(registrar.context());
         final MethodChannel channel = new MethodChannel(registrar.messenger(), "com.tekartik.sqflite");
         channel.setMethodCallHandler(new SqflitePlugin(registrar.context()));
     }
@@ -667,9 +671,11 @@ public class SqflitePlugin implements MethodCallHandler {
     //
     // Sqflite.open
     //
+   
     private void onOpenDatabaseCall(final MethodCall call, Result result) {
         final String path = call.argument(PARAM_PATH);
         final Boolean readOnly = call.argument(PARAM_READ_ONLY);
+        final String password = call.argument(PARAM_PASSWORD);
         final boolean inMemory = isInMemoryPath(path);
 
         final boolean singleInstance = !Boolean.FALSE.equals(call.argument(PARAM_SINGLE_INSTANCE)) && !inMemory;
@@ -711,7 +717,7 @@ public class SqflitePlugin implements MethodCallHandler {
         }
         final int databaseId = newDatabaseId;
 
-        final Database database = new Database(path, databaseId, singleInstance, logLevel);
+        final Database database = new Database(path, password, databaseId, singleInstance, logLevel);
 
         final BgResult bgResult = new BgResult(result);
 
@@ -924,6 +930,8 @@ public class SqflitePlugin implements MethodCallHandler {
         }
         result.success(databasesPath);
     }
+
+
 
     private class BgResult implements Result {
         // Caller handler

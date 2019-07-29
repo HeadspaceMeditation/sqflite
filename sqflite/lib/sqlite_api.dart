@@ -178,11 +178,11 @@ abstract class Database implements DatabaseExecutor {
       [List<dynamic> arguments]);
 }
 
-typedef OnDatabaseVersionChangeFn = FutureOr<void> Function(
+typedef FutureOr<void> OnDatabaseVersionChangeFn(
     Database db, int oldVersion, int newVersion);
-typedef OnDatabaseCreateFn = FutureOr<void> Function(Database db, int version);
-typedef OnDatabaseOpenFn = FutureOr<void> Function(Database db);
-typedef OnDatabaseConfigureFn = FutureOr<void> Function(Database db);
+typedef FutureOr<void> OnDatabaseCreateFn(Database db, int version);
+typedef FutureOr<void> OnDatabaseOpenFn(Database db);
+typedef FutureOr<void> OnDatabaseConfigureFn(Database db);
 
 /// to specify during [openDatabase] for [onDowngrade]
 /// Downgrading will always fail
@@ -211,6 +211,7 @@ abstract class OpenDatabaseOptions {
       OnDatabaseVersionChangeFn onUpgrade,
       OnDatabaseVersionChangeFn onDowngrade,
       OnDatabaseOpenFn onOpen,
+      String password,
       bool readOnly = false,
       bool singleInstance = true}) {
     return impl.SqfliteOpenDatabaseOptions(
@@ -220,6 +221,7 @@ abstract class OpenDatabaseOptions {
         onUpgrade: onUpgrade,
         onDowngrade: onDowngrade,
         onOpen: onOpen,
+        password: password,
         readOnly: readOnly,
         singleInstance: singleInstance);
   }
@@ -230,6 +232,7 @@ abstract class OpenDatabaseOptions {
   OnDatabaseVersionChangeFn onUpgrade;
   OnDatabaseVersionChangeFn onDowngrade;
   OnDatabaseOpenFn onOpen;
+  String password;
   bool readOnly;
   bool singleInstance;
 }
